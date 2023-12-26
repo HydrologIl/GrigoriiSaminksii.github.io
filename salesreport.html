@@ -1,0 +1,290 @@
+<!DOCTYPE HTML>
+<!--
+	Massively by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Generic Page - Massively by HTML5 UP</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<a href="index.html" class="logo">Grigorii Saminskii</a>
+					</header>
+
+				<!-- Nav -->
+					<nav id="nav">
+						<ul class="links">
+							<li class="active"><a href="index.html">Projects</a></li>
+						</ul>
+						<ul class="icons">
+							<li><a href="https://www.linkedin.com/in/grigorii-saminskii/" class="icon brands fa-linkedin"><span class="label">linkedin</span></a></li>
+							<li><a href="https://github.com/HydrologIl" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
+						</ul>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+
+						<!-- Post -->
+							<section class="post">
+								<header class="major">
+									<h1>Sales Management
+									</h1>
+								</header>
+								<h2>Business Request & User Stories</h2>
+								<p>The business request for this data analyst project was an executive sales report for sales managers. Based on the request that was made from the business request the following user stories were defined to fulfil delivery and ensure that acceptance criterias were maintained throughout the project</p>
+								<div class="table-wrapper">
+									<table>
+										<thead>
+											<tr>
+												<th>No#</th>
+												<th>As a role</th>
+												<th>I want <br /> request/demand</th>
+												<th>So that I (user value)</th>
+												<th>Acceptance criteria</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>1</td>
+												<td>Sales Manager</td>
+												<td>To get a dashboard overview of internet sales</td>
+												<td>Can follow better which customers and products sales the best</td>
+												<td>A Power BI dashboard which updates data once a day</td>
+											</tr>
+											<tr>
+												<td>2</td>
+												<td>Sales Representative</td>
+												<td>A detailed overview of Internet Sales per Customer</td>
+												<td>Can follow up my customer that buys the most and who we can sell more too</td>
+												<td>A Power Bi dashboard which allows me to filter data for each customer</td>
+											</tr>
+											<tr>
+												<td>3</td>
+												<td>Sales Representative</td>
+												<td>A detailed overview of Internet Sales per Product</td>
+												<td>Can follow up my products that sells the most</td>
+												<td>A Power Bi dashboard which allows me to filter data for each product</td>
+											</tr>
+											<tr>
+												<td>4</td>
+												<td>Sales manager</td>
+												<td>A dashboard overview of internet sales</td>
+												<td>Follow sales over time against budget</td>
+												<td>A Power BI Dashboard with graphs and KPIs comparing against budget</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+								<h2>Data Cleansing & Transformation (SQL)</h2>
+								<p>To create the necessary data model for doing analysis and fulfilling the business needs defined in the user stories the following tables were extracted using SQL</p>
+								<p>One data source (sales budget) were provided in Excel format and were connected in the data model in a later step of the process.</p>
+								<p>Below are the SQL statements for cleansing and transforming necessary data</p>
+								<h3>DIM_Calendar</h3>
+								<pre><code>/****** Cleansed DIM_DateTable ******/
+SELECT [DateKey],
+      [FullDateAlternateKey] AS Date,
+     --	,[DayNumberOfWeek]
+      [EnglishDayNameOfWeek] AS Day,
+      --,[SpanishDayNameOfWeek]
+      --,[FrenchDayNameOfWeek]
+      --,[DayNumberOfMonth]
+      --,[DayNumberOfYear]
+      [WeekNumberOfYear] AS WeekNr,
+      [EnglishMonthName] AS Month,	
+	  LEFT(EnglishMonthName,3) AS MonthShort,	
+      --,[SpanishMonthName]
+      --,[FrenchMonthName]
+      [MonthNumberOfYear] AS NonthNr,
+      [CalendarQuarter] AS Quarter,
+      [CalendarYear] AS Year
+      --,[CalendarSemester]
+      --,[FiscalQuarter]
+      --,[FiscalYear]
+      --,[FiscalSemester]
+  FROM [AdventureWorksDW2019].[dbo].[DimDate]
+  WHERE CalendarYear >=2020
+								</code></pre>
+								<h3>DIM_Customers</h3>
+								<pre><code>/****** Cleansed DIM_Customers Table  ******/
+SELECT 
+  c.CustomerKey AS CustomerKey, 
+  -- [GeographyKey], 
+  -- [CustomerAlternateKey], 
+  -- [Title], 
+  c.FirstName AS [First Name], 
+  --[MiddleName], 
+  c.LastName AS [Last Name],
+  c.FirstName + ' ' + c.LastName AS [Full Name],
+  -- [NameStyle], 
+  -- [BirthDate], 
+  -- [MaritalStatus], 
+  -- [Suffix], 
+  CASE c.Gender WHEN 'M' THEN 'Male' WHEN 'F' THEN 'Female' END AS Gender, 
+  --[EmailAddress], 
+  --[YearlyIncome], 
+  --[TotalChildren], 
+  --[NumberChildrenAtHome], 
+  --[EnglishEducation], 
+  --[SpanishEducation], 
+  --[FrenchEducation], 
+  --[EnglishOccupation], 
+  --[SpanishOccupation], 
+  --[FrenchOccupation], 
+  --[HouseOwnerFlag], 
+  --[NumberCarsOwned], 
+  --[AddressLine1], 
+  --[AddressLine2], 
+  --[Phone], 
+  c.DateFirstPurchase AS DateFirstPurchase,
+  -- [CommuteDistance] 
+  g.City AS [Customer City]
+FROM 
+  [AdventureWorksDW2019].[dbo].[DimCustomer] AS c
+  LEFT JOIN [AdventureWorksDW2019].dbo.DimGeography AS g ON g.GeographyKey = c.GeographyKey
+ORDER BY
+	CustomerKey ASC</code></pre>
+								<h3>DIM_Product</h3>
+								<pre><code>/******Cleaned DIM_Product Table  ******/
+SELECT 
+  p.[ProductKey], 
+  p.[ProductAlternateKey] AS ProductItemCode,
+  -- [ProductSubcategoryKey], 
+  -- [WeightUnitMeasureCode], 
+  -- [SizeUnitMeasureCode], 
+  p.[EnglishProductName] AS ProductName, 
+  ps.EnglishProductSubcategoryName AS [Sub Category],
+  pc.EnglishProductCategoryName AS [Product Category],
+  --[SpanishProductName], 
+  --[FrenchProductName], 
+  -- [StandardCost], 
+  -- [FinishedGoodsFlag], 
+  p.[Color] AS [Product Color], 
+  --[SafetyStockLevel], 
+  --[ReorderPoint], 
+  --[ListPrice], 
+  p.[Size] AS [Product Size], 
+  --[SizeRange], 
+  --[Weight], 
+  --[DaysToManufacture], 
+  p.[ProductLine] AS [Product Line], 
+  --[DealerPrice], 
+  --[Class], 
+  --[Style], 
+  p.[ModelName] AS [Product Model Name], 
+  -- [LargePhoto], 
+  [EnglishDescription] AS [Product Description], 
+  --[FrenchDescription], 
+  --[ChineseDescription], 
+  --[ArabicDescription], 
+  --[HebrewDescription], 
+  --[ThaiDescription], 
+  --[GermanDescription], 
+  --[JapaneseDescription], 
+  --[TurkishDescription], 
+  --[StartDate], 
+  --[EndDate], 
+  --[Status] 
+  ISNULL(p.Status, 'Outdated') AS [Product Status]
+FROM 
+  [AdventureWorksDW2019].[dbo].[DimProduct] AS p
+  LEFT JOIN dbo.DimProductSubcategory AS ps ON ps.ProductSubcategoryKey = p.ProductSubcategoryKey
+  LEFT JOIN dbo.DimProductCategory AS pc ON ps.ProductCategoryKey = pc.ProductCategoryKey
+ORDER BY 
+  p.ProductKey ASC</code></pre>
+								<h3>FACT_InternetSales</h3>
+								<pre><code>/****** Cleansed FactInternetSales Table  ******/
+SELECT 
+  [ProductKey], 
+  [OrderDateKey], 
+  [DueDateKey], 
+  [ShipDateKey], 
+  [CustomerKey], 
+  --[PromotionKey], 
+  --[CurrencyKey], 
+  --[SalesTerritoryKey], 
+  [SalesOrderNumber], 
+  --[SalesOrderLineNumber], 
+  --[RevisionNumber], 
+  --[OrderQuantity], 
+  --[UnitPrice], 
+  --[ExtendedAmount], 
+  --[UnitPriceDiscountPct], 
+  --[DiscountAmount], 
+  --[ProductStandardCost], 
+  --[TotalProductCost], 
+  [SalesAmount]
+  --[TaxAmt], 
+  --[Freight], 
+  --[CarrierTrackingNumber], 
+  --[CustomerPONumber], 
+  --[OrderDate], 
+  --[DueDate], 
+  --[ShipDate] 
+FROM 
+  [AdventureWorksDW2019].[dbo].[FactInternetSales]
+WHERE
+  LEFT (OrderDateKey,4) >= YEAR(GETDATE()) -3 --Ensures we only bring two years of date from the extraction	
+ORDER BY
+  OrderDateKey ASC</code></pre>
+									<h2>Data Model</h2>
+									<p>Below is a screenshot of the data model after cleansed and prepared tables were read into Power BI</p>
+									<p>The data model also shows how FACT_Budget has been connected to FACT_InternetSales and other necessary DIM tables</p>
+									<span class="data model"><img src="images/data-structure.jpeg" alt="" style="max-width: 100%; height: auto;"></span>
+									<h2>Sales Management Dashboard</h2>
+									<p>The finished sales management dashboard with one page that works as a dashboard and overview, with two other pages focused on combining tables for necessary details and visualization to show sales over time, per customers and per products.</p>
+									<h3>Click on this picture to open interactive dashboard:</h3>
+									<span class="data model"><a href="https://app.powerbi.com/view?r=eyJrIjoiOTVmMTc0NzUtNjNkZS00YTM4LTk2YzEtNmJlOTFhOTk3N2FhIiwidCI6ImFlOWQ4Zjc0LTQ4MDgtNDU1MS1hMzZiLTRkMjcyZTYxYWNjYyIsImMiOjl9" class="image main"><img src="images/sales-overview.png" alt="" style="max-width: 100%; height: auto;"></span>
+							</section>
+
+					</div>
+
+				<!-- Footer -->
+					<footer id="footer">
+						
+						<section class="split contact">
+							
+							<section class="alt">
+								<h3>Location</h3>
+								<p>Israel</p>
+							</section>
+							<section>
+								<h3>Phone</h3>
+								<p>(972) 53-2454308</p>
+							</section>
+							<section>
+								<h3>Email</h3>
+								<p>g.saminsky@gmail.com</p>
+							</section>
+						</section>
+					</footer>
+
+				<!-- Copyright -->
+					<div id="copyright">
+						<ul><li>&copy; Untitled</li><li>Design: <a href="https://html5up.net">HTML5 UP</a></li></ul>
+					</div>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>
